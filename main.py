@@ -27,6 +27,11 @@ def change_dir():
     file_service.change_dir(directory)
 
 
+def get_metadata():
+    filename = input("Enter file name : ")
+    file_service.get_file_meta_data(filename)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Restfull file server')
     parser.add_argument('-d', '--directory', help='Current directory', default='C:/IdeaProjects/Luxoft/file_server_007')
@@ -37,7 +42,8 @@ def main():
         "create": create_file,
         "delete": delete_file,
         "ls": list_dir,
-        "cd": change_dir
+        "cd": change_dir,
+        "meta": get_metadata
     }
     while True:
         command = input("Enter command: ")
