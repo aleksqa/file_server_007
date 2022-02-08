@@ -4,3 +4,5 @@
 .idea/
 /tests/file_server/.pytest_cache/
 /tests/utils/.pytest_cache/
+/.mypy_cache/
+/.pytest_cache/
