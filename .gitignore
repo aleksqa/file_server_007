@@ -6,3 +6,5 @@
 /tests/utils/.pytest_cache/
 /.mypy_cache/
 /.pytest_cache/
+/file_server_007.log
+/telemetry.log
