@@ -1,5 +1,6 @@
-from typing import Optional, List, Union
+from typing import Optional, Union
 from src import utils
+from src.crypto import SignatureFactory
 import os
 
 
@@ -13,19 +14,6 @@ def unique_file_name() -> str:
         name = utils.random_string()
         if not os.path.exists(name):
             return name
-
-
-def create_file(content: str) -> str:
-    """
-    Create new file with unique name and content inside
-
-    :param content: some input to be added to file
-    :return: file name with content
-    """
-    filename = unique_file_name()
-    with open(filename, "w") as file:
-        file.write(content)
-    return filename
 
 
 def delete_file(filename: str) -> bool:
@@ -78,6 +66,60 @@ def read_file(filename: str) -> Optional[str]:
             return f.read()
     else:
         return None
+
+
+def read_signed_file(filename: str) -> Optional[str]:
+    """
+    Read signed file by name
+
+    :param filename: file name to be read
+    :return: file name
+    """
+    data = read_file(filename)
+    for label in SignatureFactory.signers:
+        sig_filename = f"{filename}.{label}"
+        if check_file(sig_filename):
+            signer = SignatureFactory.get_signer(label)
+            with open(sig_filename, "r") as sig_file:
+                actual_sig = signer(data)
+                expected_sig = sig_file.read()
+                if actual_sig == expected_sig:
+                    return data
+                else:
+                    raise Exception("File is Broken")
+        else:
+            raise Exception("Signature file is missing")
+
+
+def create_file(content: str) -> str:
+    """
+    Create new file with unique name and content inside
+
+    :param content: some input to be added to file
+    :return: file name with content
+    """
+    filename = unique_file_name()
+    with open(filename, "w") as file:
+        file.write(content)
+    return filename
+
+
+def create_signed_file(content: str, signer: str) -> tuple:
+    """
+    Create signed file with unique name and content inside
+
+    :param signer: md5, sha512
+    :param content: some input to be added to file
+    :return: both unique filenames for file and signed file
+    """
+    filename = create_file(content)
+    sig_filename = '{}.{}'.format(filename, signer)
+    signer = SignatureFactory.get_signer(signer)
+
+    sig_content = signer(content)
+    with open(sig_filename, "w") as file:
+        file.write(sig_content)
+    return filename, sig_filename
 
 
 def check_file(filename: str) -> bool:

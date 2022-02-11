@@ -2,6 +2,7 @@ import pytest
 
 from src import file_service
 from mock import mock_open
+from src.crypto import SignatureFactory
 
 
 def test_list_dir_success(mocker):
@@ -118,3 +119,24 @@ def test_file_meta_data_error_handling(mocker):
     stat_mock = mocker.patch('os.stat', side_effect=OSError())
     with pytest.raises(OSError):
         file_service.get_file_meta_data('')
+
+
+def test_create_signed_file(mocker):
+    test_filename = "test_file"
+    test_file_content = "test_content"
+    test_label = "test_label"
+
+    mocker.patch("src.file_service.file_service.create_file").return_value = test_filename
+
+    signer = list(SignatureFactory.signers.values())[0]
+    mock_get_signer = mocker.patch('src.crypto.SignatureFactory.get_signer')
+    mock_get_signer.return_value = signer
+
+    mocked_open = mock_open()
+    mocker.patch("builtins.open", mocked_open, create=True)
+
+    sig_content = signer(test_file_content)
+    file_service.create_signed_file(test_file_content, test_label)
+
+    mocked_open.assert_called_with(test_filename + "." + test_label, "w")
+    mocked_open().write.assert_called_with(sig_content)

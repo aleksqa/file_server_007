@@ -21,7 +21,16 @@ def read_file():
 def create_file():
     logging.info("create_file() is called")
     content = input("Enter file content : ")
-    file_service.create_file(content=content)
+    filename = file_service.create_file(content=content)
+    logging.info(f"Creating file {filename} with content: \n{content}")
+
+
+def create_signed_file():
+    logging.info("create_signed_file() is called")
+    content = input("Enter file content: ")
+    signer = input("Enter signer (md5, sha512): ")
+    filenames = file_service.create_signed_file(content, signer)
+    logging.info(f"Creating file {filenames[0]} and signature file {filenames[1]} with content: \n{content}")
 
 
 def delete_file():
@@ -41,10 +50,22 @@ def change_dir():
     file_service.change_dir(directory)
 
 
+def get_file_permissions():
+    logging.info("get_file_permissions() is called")
+    filename = input("Enter file name : ")
+    file_service.get_file_permissions(filename)
+
+
 def get_metadata():
     logging.info("get_metadata() is called")
     filename = input("Enter file name : ")
     file_service.get_file_meta_data(filename)
+
+
+def read_signed_file():
+    logging.info("read_signed_file() is called")
+    filename = input("Enter file name : ")
+    file_service.read_signed_file(filename)
 
 
 def main():
@@ -59,7 +80,10 @@ def main():
         "delete": delete_file,
         "ls": list_dir,
         "cd": change_dir,
-        "meta": get_metadata
+        "meta": get_metadata,
+        "get_signed": read_signed_file,
+        "create_signed": create_signed_file,
+        "get_permissions": get_file_permissions
     }
     while True:
         command = input("Enter command: ")
