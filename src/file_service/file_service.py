@@ -86,7 +86,7 @@ def read_signed_file(filename: str) -> Optional[str]:
                 if actual_sig == expected_sig:
                     return data
                 else:
-                    raise Exception("File is Broken")
+                    raise Exception("Signature does not match")
         else:
             raise Exception("Signature file is missing")
 
@@ -135,24 +135,24 @@ def check_file(filename: str) -> bool:
 def check_dir(directory: str) -> bool:
     """
     Checks if directory exist
+
     :param directory path to directory to check
     :returns True if directory exists
     """
     return os.path.isdir(directory)
 
 
-# def get_file_permissions(filename: str) -> Optional[str]:
-#     """
-#     Gets file permissions in hex
-#     :param filename name of file
-#     :returns hex number
-#     """
-#     if check_file(filename):
-#         return hex(os.stat(filename).st_mode)
-#     else:
-#         return None
-#
-#
+def get_file_permissions(filename: str) -> Optional[str]:
+    """
+    Gets file permissions in hex
+    :param filename name of file
+    :returns hex number
+    """
+    if check_file(filename):
+        return hex(os.stat(filename).st_mode)
+    else:
+        return None
+
 # def set_file_permissions(filename: str, permissions: str):
 #     """
 #     Sets file permissions
@@ -165,6 +165,7 @@ def check_dir(directory: str) -> bool:
 #         return True
 #     else:
 #         return False
+
 
 def get_file_meta_data(filename: str) -> Union[tuple, bool]:
     """
